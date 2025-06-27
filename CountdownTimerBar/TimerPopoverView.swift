@@ -7,69 +7,71 @@
 
 import SwiftUI
 
+enum TimerType: String, CaseIterable {
+    case focus = "Focus"
+    case rest = "Rest"
+}
+
+struct TimerSectionView: View {
+    let type: TimerType
+    @Binding var activeTimer: (type: TimerType, index: Int)?
+    @EnvironmentObject var settings: SettingsStore
+    @EnvironmentObject var timerModel: TimerModel
+
+    private var timers: [Int] {
+        switch type {
+        case .focus: return settings.focusTimers
+        case .rest: return settings.restTimers
+        }
+    }
+    
+    var body: some View {
+        VStack(alignment: .center, spacing: 8) {
+            Text(type.rawValue)
+            ForEach(Array(timers.enumerated()), id: \.offset) { index, seconds in
+                TimerButton(
+                    value: seconds,
+                    isActive: activeTimer?.type == type && activeTimer?.index == index && timerModel.isRunning,
+                    display: displayString(for: seconds)
+                ) {
+                    if activeTimer?.type == type && activeTimer?.index == index && timerModel.isRunning {
+                        timerModel.stop()
+                        activeTimer = nil
+                    } else {
+                        timerModel.start(seconds: seconds)
+                        activeTimer = (type, index)
+                    }
+                }
+            }
+        }
+    }
+    
+    private func displayString(for seconds: Int) -> String {
+        if seconds < 60 { return "\(seconds)s" }
+        if seconds % 60 == 0 { return "\(seconds / 60)" }
+        return "\(seconds)s"
+    }
+}
+
 struct TimerPopoverView: View {
     @EnvironmentObject var settings: SettingsStore
     @EnvironmentObject var timerModel: TimerModel
     
     @State private var showOptions = false
-    @State private var activeTimer: (type: String, index: Int)? = nil
-    
-    // Новый стейт: какой таймер сейчас активен (в секундах)
-    private var activeValue: Int? {
-        timerModel.isRunning ? timerModel.remainingSeconds : nil
-    }
-
-    // Форматирование для кнопки: 1s, 10s, 30, 90s, 2
-    func displayString(for seconds: Int) -> String {
-        if seconds < 60 { return "\(seconds)s" }
-        if seconds % 60 == 0 { return "\(seconds / 60)" }
-        return "\(seconds)s"
-    }
+    @State private var activeTimer: (type: TimerType, index: Int)? = nil
 
     var body: some View {
         VStack {
-            // Показывать 00:00 если таймер не активен
             Text(formatTime(timerModel.isRunning ? timerModel.remainingSeconds : 0))
                 .font(.largeTitle)
                 .padding()
+            
             HStack(alignment: .top) {
-                VStack(alignment: .center, spacing: 8) {
-                    Text("Focus")
-                    ForEach(Array(settings.focusTimers.enumerated()), id: \.offset) { idx, t in
-                        TimerButton(
-                            value: t,
-                            isActive: activeTimer?.type == "focus" && activeTimer?.index == idx && timerModel.isRunning,
-                            display: displayString(for: t)
-                        ) {
-                            if activeTimer?.type == "focus" && activeTimer?.index == idx && timerModel.isRunning {
-                                timerModel.stop()
-                                activeTimer = nil
-                            } else {
-                                timerModel.start(seconds: t)
-                                activeTimer = ("focus", idx)
-                            }
-                        }
-                    }
-                }
-                VStack(alignment: .center, spacing: 8) {
-                    Text("Rest")
-                    ForEach(Array(settings.restTimers.enumerated()), id: \.offset) { idx, t in
-                        TimerButton(
-                            value: t,
-                            isActive: activeTimer?.type == "rest" && activeTimer?.index == idx && timerModel.isRunning,
-                            display: displayString(for: t)
-                        ) {
-                            if activeTimer?.type == "rest" && activeTimer?.index == idx && timerModel.isRunning {
-                                timerModel.stop()
-                                activeTimer = nil
-                            } else {
-                                timerModel.start(seconds: t)
-                                activeTimer = ("rest", idx)
-                            }
-                        }
-                    }
+                ForEach(TimerType.allCases, id: \.self) { timerType in
+                    TimerSectionView(type: timerType, activeTimer: $activeTimer)
                 }
             }
+            
             Button(action: { showOptions = true }) {
                 Image(systemName: "gearshape")
             }
@@ -81,10 +83,10 @@ struct TimerPopoverView: View {
         .frame(width: 250)
     }
 
-    func formatTime(_ seconds: Int) -> String {
-        let m = seconds / 60
-        let s = seconds % 60
-        return String(format: "%02d:%02d", m, s)
+    private func formatTime(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        let seconds = seconds % 60
+        return String(format: "%02d:%02d", minutes, seconds)
     }
 }
 
