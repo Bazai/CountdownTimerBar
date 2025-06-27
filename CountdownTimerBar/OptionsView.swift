@@ -13,11 +13,14 @@ struct OptionsView: View {
     @State private var focusInput = ""
     @State private var restInput = ""
     @State private var soundOn = true
+    @State private var checkboxOption = false
+    @State private var showAbout = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Options").font(.headline)
             Toggle("Sound", isOn: $soundOn)
+            Toggle("Checkbox Option", isOn: $checkboxOption)
             VStack(alignment: .leading) {
                 Text("Focus Timers")
                 TextField("10,15,30", text: $focusInput, onCommit: {
@@ -30,11 +33,25 @@ struct OptionsView: View {
                     restTimers = restInput.split(separator: ",").compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
                 })
             }
-            Button("About") {
-                // Show about info
-            }
-            Button("Quit") {
-                NSApp.terminate(nil)
+            HStack {
+                Button("About") {
+                    showAbout = true
+                }
+                .sheet(isPresented: $showAbout) {
+                    VStack(spacing: 20) {
+                        Text("CountdownTimerBar")
+                            .font(.title)
+                        Text("Minimalist configurable timer for macOS StatusBar.\nInspired by Hourglass UI.")
+                            .multilineTextAlignment(.center)
+                        Button("Close") { showAbout = false }
+                    }
+                    .padding()
+                    .frame(width: 300)
+                }
+                Spacer()
+                Button("Quit") {
+                    NSApp.terminate(nil)
+                }
             }
         }
         .padding()
