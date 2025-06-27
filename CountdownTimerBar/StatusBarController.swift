@@ -5,12 +5,15 @@ import SwiftUI
 class StatusBarController {
     private var statusItem: NSStatusItem
     private let popover: NSPopover
-    private let timerModel = TimerModel()
+    private let timerModel: TimerModel
+    private let settingsStore: SettingsStore
     private var cancellable: AnyCancellable?
 
     init() {
         self.statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         self.popover = NSPopover()
+        self.settingsStore = SettingsStore()
+        self.timerModel = TimerModel(settings: self.settingsStore)
         
         setupStatusItem()
         setupPopover()
@@ -39,9 +42,11 @@ class StatusBarController {
     }
     
     private func setupPopover() {
-        popover.contentViewController = NSHostingController(
-            rootView: TimerPopoverView().environmentObject(timerModel)
-        )
+        let timerView = TimerPopoverView()
+            .environmentObject(timerModel)
+            .environmentObject(settingsStore)
+        
+        popover.contentViewController = NSHostingController(rootView: timerView)
         popover.behavior = .transient
     }
     

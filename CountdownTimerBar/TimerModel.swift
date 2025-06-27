@@ -15,6 +15,11 @@ class TimerModel: ObservableObject {
     @Published var isRunning: Bool = false
 
     private var timer: Timer?
+    private let settings: SettingsStore
+
+    init(settings: SettingsStore) {
+        self.settings = settings
+    }
 
     func start(seconds: Int) {
         remainingSeconds = seconds
@@ -47,7 +52,7 @@ class TimerModel: ObservableObject {
                     let content = UNMutableNotificationContent()
                     content.title = "Timer finished"
                     content.body = "Countdown complete."
-                    if UserDefaults.standard.bool(forKey: "soundOn") {
+                    if self.settings.soundOn {
                         content.sound = UNNotificationSound.default
                     }
                     let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
@@ -55,7 +60,7 @@ class TimerModel: ObservableObject {
                 }
             }
             // Звук (если включено)
-            if UserDefaults.standard.bool(forKey: "soundOn") {
+            if self.settings.soundOn {
                 NSSound(named: NSSound.Name("Glass"))?.play()
             }
         }

@@ -8,33 +8,33 @@
 import SwiftUI
 
 struct OptionsView: View {
-    @Binding var focusTimers: [Int]
-    @Binding var restTimers: [Int]
+    @EnvironmentObject var settings: SettingsStore
     var onClose: (() -> Void)? = nil
-    @State private var focusInput = ""
-    @State private var restInput = ""
-    @State private var soundOn = UserDefaults.standard.bool(forKey: "soundOn")
+    
+    @State private var focusInput: String = ""
+    @State private var restInput: String = ""
     @State private var showAbout = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Options").font(.headline)
-            Toggle("Sound", isOn: $soundOn)
-                .onChange(of: soundOn) { value in
-                    UserDefaults.standard.set(value, forKey: "soundOn")
-                }
+            
+            Toggle("Sound", isOn: $settings.soundOn)
+            
             VStack(alignment: .leading) {
                 Text("Focus Timers")
-                TextField("10,15,30", text: $focusInput, onCommit: {
-                    focusTimers = parseTimerInput(focusInput)
+                TextField("e.g. 15, 30m, 45s", text: $focusInput, onCommit: {
+                    settings.focusTimers = parseTimerInput(focusInput)
                 })
             }
+            
             VStack(alignment: .leading) {
                 Text("Rest Timers")
-                TextField("2,3,5,19", text: $restInput, onCommit: {
-                    restTimers = parseTimerInput(restInput)
+                TextField("e.g. 1m, 5, 10s", text: $restInput, onCommit: {
+                    settings.restTimers = parseTimerInput(restInput)
                 })
             }
+            
             HStack {
                 Button("About") {
                     showAbout = true
@@ -64,13 +64,18 @@ struct OptionsView: View {
         .padding()
         .frame(width: 300)
         .onAppear {
-            focusInput = focusTimers.map { $0 % 60 == 0 ? "\($0/60)" : "\($0)s" }.joined(separator: ",")
-            restInput = restTimers.map { $0 % 60 == 0 ? "\($0/60)" : "\($0)s" }.joined(separator: ",")
-            soundOn = UserDefaults.standard.bool(forKey: "soundOn")
+            self.focusInput = settings.focusTimers.map(formatForInput).joined(separator: ", ")
+            self.restInput = settings.restTimers.map(formatForInput).joined(separator: ", ")
         }
     }
 
-    func parseTimerInput(_ input: String) -> [Int] {
+    private func formatForInput(_ seconds: Int) -> String {
+        if seconds < 60 { return "\(seconds)s" }
+        if seconds % 60 == 0 { return "\(seconds / 60)" }
+        return "\(seconds)s"
+    }
+
+    private func parseTimerInput(_ input: String) -> [Int] {
         input.split(separator: ",").compactMap { part in
             let trimmed = part.trimmingCharacters(in: .whitespaces)
             if trimmed.hasSuffix("s") {
@@ -84,3 +89,4 @@ struct OptionsView: View {
         }
     }
 }
+

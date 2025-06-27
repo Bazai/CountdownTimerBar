@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct TimerPopoverView: View {
-    @State private var focusTimers = UserDefaults.standard.stringArray(forKey: "focusTimers")?.compactMap { Int($0) } ?? [15, 30, 35]
-    @State private var restTimers = UserDefaults.standard.stringArray(forKey: "restTimers")?.compactMap { Int($0) } ?? [10, 30, 600, 1800]
+    @EnvironmentObject var settings: SettingsStore
+    @EnvironmentObject var timerModel: TimerModel
+    
     @State private var showOptions = false
     @State private var activeTimer: (type: String, index: Int)? = nil
-    @EnvironmentObject var timerModel: TimerModel
     
     // Новый стейт: какой таймер сейчас активен (в секундах)
     private var activeValue: Int? {
@@ -22,13 +22,8 @@ struct TimerPopoverView: View {
     // Форматирование для кнопки: 1s, 10s, 30, 90s, 2
     func displayString(for seconds: Int) -> String {
         if seconds < 60 { return "\(seconds)s" }
-        if seconds % 60 == 0 { return "\(seconds/60)" }
+        if seconds % 60 == 0 { return "\(seconds / 60)" }
         return "\(seconds)s"
-    }
-
-    func saveTimers() {
-        UserDefaults.standard.set(focusTimers.map(String.init), forKey: "focusTimers")
-        UserDefaults.standard.set(restTimers.map(String.init), forKey: "restTimers")
     }
 
     var body: some View {
@@ -40,7 +35,7 @@ struct TimerPopoverView: View {
             HStack(alignment: .top) {
                 VStack(alignment: .center, spacing: 8) {
                     Text("Focus")
-                    ForEach(Array(focusTimers.enumerated()), id: \ .offset) { idx, t in
+                    ForEach(Array(settings.focusTimers.enumerated()), id: \.offset) { idx, t in
                         TimerButton(
                             value: t,
                             isActive: activeTimer?.type == "focus" && activeTimer?.index == idx && timerModel.isRunning,
@@ -58,7 +53,7 @@ struct TimerPopoverView: View {
                 }
                 VStack(alignment: .center, spacing: 8) {
                     Text("Rest")
-                    ForEach(Array(restTimers.enumerated()), id: \ .offset) { idx, t in
+                    ForEach(Array(settings.restTimers.enumerated()), id: \.offset) { idx, t in
                         TimerButton(
                             value: t,
                             isActive: activeTimer?.type == "rest" && activeTimer?.index == idx && timerModel.isRunning,
@@ -79,13 +74,11 @@ struct TimerPopoverView: View {
                 Image(systemName: "gearshape")
             }
             .popover(isPresented: $showOptions, arrowEdge: .bottom) {
-                OptionsView(focusTimers: $focusTimers, restTimers: $restTimers, onClose: { showOptions = false })
+                OptionsView(onClose: { showOptions = false })
             }
         }
         .padding()
         .frame(width: 250)
-        .onChange(of: focusTimers) { _ in saveTimers() }
-        .onChange(of: restTimers) { _ in saveTimers() }
     }
 
     func formatTime(_ seconds: Int) -> String {
