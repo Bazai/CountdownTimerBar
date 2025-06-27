@@ -14,10 +14,11 @@ Configurable countdown timer in the macOS StatusBar. Fast preset switching, simp
 - [x] Click icon → popover with two columns: Focus/Rest timers
 - [x] Gear button for options
 - [ ] Options UI: About, Sound, Checkbox Option, Focus Timers (input), Rest Timers (input), Quit
-- [ ] Inactive timer: primary System Theme color (dark), background system theme color (white)
-- [ ] Active timer: purple border appears
-- [ ] Clicking active timer stops timer
-- [ ] StatusBar: show 00:00 when no active timer
+- [x] Inactive timer: primary System Theme color (dark), background system theme color (white)
+- [x] Active timer: purple border appears
+- [x] Clicking active timer stops timer
+- [x] StatusBar: show 00:00 when no active timer
+- [x] StatusBar timer displayed in outlined pill with perfect UX (no aliasing, no cut edges, matches reference)
 
 ### 2. Timer Logic
 

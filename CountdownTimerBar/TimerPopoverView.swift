@@ -25,41 +25,41 @@ struct TimerPopoverView: View {
             Text(formatTime(timerModel.isRunning ? timerModel.remainingSeconds : 0))
                 .font(.largeTitle)
                 .padding()
-            HStack {
-                VStack {
+            HStack(alignment: .top) {
+                VStack(alignment: .center, spacing: 8) {
                     Text("Focus")
                     ForEach(Array(focusTimers.enumerated()), id: \ .offset) { idx, t in
                         TimerButton(
                             value: t,
                             isActive: activeTimer?.type == "focus" && activeTimer?.index == idx && timerModel.isRunning,
-                            action: {
-                                if activeTimer?.type == "focus" && activeTimer?.index == idx && timerModel.isRunning {
-                                    timerModel.stop()
-                                    activeTimer = nil
-                                } else {
-                                    timerModel.start(seconds: t * 60)
-                                    activeTimer = ("focus", idx)
-                                }
+                            display: t < 60 ? "\(t)s" : "\(t)"
+                        ) {
+                            if activeTimer?.type == "focus" && activeTimer?.index == idx && timerModel.isRunning {
+                                timerModel.stop()
+                                activeTimer = nil
+                            } else {
+                                timerModel.start(seconds: t * 60)
+                                activeTimer = ("focus", idx)
                             }
-                        )
+                        }
                     }
                 }
-                VStack {
+                VStack(alignment: .center, spacing: 8) {
                     Text("Rest")
                     ForEach(Array(restTimers.enumerated()), id: \ .offset) { idx, t in
                         TimerButton(
                             value: t,
                             isActive: activeTimer?.type == "rest" && activeTimer?.index == idx && timerModel.isRunning,
-                            action: {
-                                if activeTimer?.type == "rest" && activeTimer?.index == idx && timerModel.isRunning {
-                                    timerModel.stop()
-                                    activeTimer = nil
-                                } else {
-                                    timerModel.start(seconds: t)
-                                    activeTimer = ("rest", idx)
-                                }
+                            display: t < 60 ? "\(t)s" : "\(t)"
+                        ) {
+                            if activeTimer?.type == "rest" && activeTimer?.index == idx && timerModel.isRunning {
+                                timerModel.stop()
+                                activeTimer = nil
+                            } else {
+                                timerModel.start(seconds: t)
+                                activeTimer = ("rest", idx)
                             }
-                        )
+                        }
                     }
                 }
             }
@@ -84,11 +84,12 @@ struct TimerPopoverView: View {
 struct TimerButton: View {
     let value: Int
     let isActive: Bool
+    let display: String
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            Text("\(value)")
+            Text(display)
                 .foregroundColor(Color.black)
                 .frame(width: 60, height: 60)
                 .background(
