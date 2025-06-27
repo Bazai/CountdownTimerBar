@@ -41,8 +41,7 @@ Configurable countdown timer in the macOS StatusBar. Fast preset switching, simp
 
 ### 5. Extras
 
-- [ ] Statistics (optional)
-- [ ] Notifications/sounds on timer end
+- [x] Notifications/sounds on timer end
 
 ---
 
