@@ -15,6 +15,11 @@ struct OptionsView: View {
     @State private var restInput: String = ""
     @State private var showAbout = false
 
+    @State private var focusInputError = false
+    @State private var restInputError = false
+
+    private enum InputField { case focus, rest }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Options").font(.headline)
@@ -24,15 +29,31 @@ struct OptionsView: View {
             VStack(alignment: .leading) {
                 Text("Focus Timers")
                 TextField("e.g. 15, 30m, 45s", text: $focusInput, onCommit: {
-                    settings.focusTimers = parseTimerInput(focusInput)
+                    let result = parseTimerInput(focusInput)
+                    settings.focusTimers = result.values
+                    if result.hasInvalid {
+                        triggerErrorAnimation(for: .focus)
+                    }
                 })
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(focusInputError ? Color.red : Color.clear, lineWidth: 1.5)
+                )
             }
             
             VStack(alignment: .leading) {
                 Text("Rest Timers")
                 TextField("e.g. 1m, 5, 10s", text: $restInput, onCommit: {
-                    settings.restTimers = parseTimerInput(restInput)
+                    let result = parseTimerInput(restInput)
+                    settings.restTimers = result.values
+                    if result.hasInvalid {
+                        triggerErrorAnimation(for: .rest)
+                    }
                 })
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(restInputError ? Color.red : Color.clear, lineWidth: 1.5)
+                )
             }
             
             HStack {
@@ -69,24 +90,54 @@ struct OptionsView: View {
         }
     }
 
+    private func triggerErrorAnimation(for field: InputField) {
+        let errorStateBinding: Binding<Bool> = (field == .focus) ? $focusInputError : $restInputError
+        
+        withAnimation { errorStateBinding.wrappedValue = true }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            withAnimation { errorStateBinding.wrappedValue = false }
+        }
+    }
+
     private func formatForInput(_ seconds: Int) -> String {
         if seconds < 60 { return "\(seconds)s" }
         if seconds % 60 == 0 { return "\(seconds / 60)" }
         return "\(seconds)s"
     }
 
-    private func parseTimerInput(_ input: String) -> [Int] {
-        input.split(separator: ",").compactMap { part in
-            let trimmed = part.trimmingCharacters(in: .whitespaces)
-            if trimmed.hasSuffix("s") {
-                return Int(trimmed.dropLast())
-            } else if trimmed.hasSuffix("m") {
-                if let min = Int(trimmed.dropLast()) { return min * 60 }
-            } else if let min = Int(trimmed) {
-                return min * 60
-            }
-            return nil
+    private func parseTimerInput(_ input: String) -> (values: [Int], hasInvalid: Bool) {
+        var values: [Int] = []
+        var hasInvalidInput = false
+        
+        if input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return ([], false)
         }
+        
+        let parts = input.split(separator: ",")
+        for part in parts {
+            let trimmed = part.trimmingCharacters(in: .whitespaces)
+            guard !trimmed.isEmpty else { continue }
+            
+            var parsedValue: Int? = nil
+            
+            if trimmed.hasSuffix("s") {
+                parsedValue = Int(trimmed.dropLast())
+            } else if trimmed.hasSuffix("m") {
+                if let minutes = Int(trimmed.dropLast()) {
+                    parsedValue = minutes * 60
+                }
+            } else if let minutes = Int(trimmed) {
+                parsedValue = minutes * 60
+            }
+            
+            if let value = parsedValue {
+                values.append(value)
+            } else {
+                hasInvalidInput = true
+            }
+        }
+        return (values, hasInvalidInput)
     }
 }
 
