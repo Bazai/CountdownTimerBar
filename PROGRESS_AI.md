@@ -31,7 +31,7 @@ Configurable countdown timer in the macOS StatusBar. Fast preset switching, simp
 
 - [x] Change Focus/Rest timer values via options (input string → array)
 - [x] Parse input strings to arrays
-- [ ] Persist user settings (UserDefaults)
+- [x] Persist user settings (UserDefaults)
 
 ### 4. Options
 
@@ -80,8 +80,8 @@ Configurable countdown timer in the macOS StatusBar. Fast preset switching, simp
 
 ### Step 6: Settings Logic
 
-- [ ] Parse input strings to arrays
-- [ ] Save/load settings (UserDefaults)
+- [x] Parse input strings to arrays
+- [x] Save/load settings (UserDefaults)
 
 ### Step 7: Polish
 

@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct TimerPopoverView: View {
-    @State private var focusTimers = [15, 30, 35]
-    @State private var restTimers = [10, 30, 600, 1800]
+    @State private var focusTimers = UserDefaults.standard.stringArray(forKey: "focusTimers")?.compactMap { Int($0) } ?? [15, 30, 35]
+    @State private var restTimers = UserDefaults.standard.stringArray(forKey: "restTimers")?.compactMap { Int($0) } ?? [10, 30, 600, 1800]
     @State private var showOptions = false
     @State private var activeTimer: (type: String, index: Int)? = nil
     @EnvironmentObject var timerModel: TimerModel
@@ -24,6 +24,11 @@ struct TimerPopoverView: View {
         if seconds < 60 { return "\(seconds)s" }
         if seconds % 60 == 0 { return "\(seconds/60)" }
         return "\(seconds)s"
+    }
+
+    func saveTimers() {
+        UserDefaults.standard.set(focusTimers.map(String.init), forKey: "focusTimers")
+        UserDefaults.standard.set(restTimers.map(String.init), forKey: "restTimers")
     }
 
     var body: some View {
@@ -79,6 +84,8 @@ struct TimerPopoverView: View {
         }
         .padding()
         .frame(width: 250)
+        .onChange(of: focusTimers) { _ in saveTimers() }
+        .onChange(of: restTimers) { _ in saveTimers() }
     }
 
     func formatTime(_ seconds: Int) -> String {
