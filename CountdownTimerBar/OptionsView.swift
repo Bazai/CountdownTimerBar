@@ -12,15 +12,16 @@ struct OptionsView: View {
     @Binding var restTimers: [Int]
     @State private var focusInput = ""
     @State private var restInput = ""
-    @State private var soundOn = true
-    @State private var checkboxOption = false
+    @State private var soundOn = UserDefaults.standard.bool(forKey: "soundOn")
     @State private var showAbout = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Options").font(.headline)
             Toggle("Sound", isOn: $soundOn)
-            Toggle("Checkbox Option", isOn: $checkboxOption)
+                .onChange(of: soundOn) { value in
+                    UserDefaults.standard.set(value, forKey: "soundOn")
+                }
             VStack(alignment: .leading) {
                 Text("Focus Timers")
                 TextField("10,15,30", text: $focusInput, onCommit: {
@@ -41,8 +42,11 @@ struct OptionsView: View {
                     VStack(spacing: 20) {
                         Text("CountdownTimerBar")
                             .font(.title)
-                        Text("Minimalist configurable timer for macOS StatusBar.\nInspired by Hourglass UI.")
+                        Text("Minimalist configurable timer for macOS StatusBar.\nInspired by Hourglass.")
                             .multilineTextAlignment(.center)
+                        Text("© 2025 Pavel Bubentsov")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
                         Button("Close") { showAbout = false }
                     }
                     .padding()
@@ -50,7 +54,9 @@ struct OptionsView: View {
                 }
                 Spacer()
                 Button("Quit") {
-                    NSApp.terminate(nil)
+                    DispatchQueue.main.async {
+                        exit(0)
+                    }
                 }
             }
         }
@@ -59,6 +65,7 @@ struct OptionsView: View {
         .onAppear {
             focusInput = focusTimers.map { $0 % 60 == 0 ? "\($0/60)" : "\($0)s" }.joined(separator: ",")
             restInput = restTimers.map { $0 % 60 == 0 ? "\($0/60)" : "\($0)s" }.joined(separator: ",")
+            soundOn = UserDefaults.standard.bool(forKey: "soundOn")
         }
     }
 

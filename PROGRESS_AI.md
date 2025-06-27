@@ -13,7 +13,7 @@ Configurable countdown timer in the macOS StatusBar. Fast preset switching, simp
 - [x] StatusBar icon with timer (rounded square, clock inside)
 - [x] Click icon → popover with two columns: Focus/Rest timers
 - [x] Gear button for options
-- [ ] Options UI: About, Sound, Checkbox Option, Focus Timers (input), Rest Timers (input), Quit
+- [x] Options UI: About, Sound, Focus Timers (input), Rest Timers (input), Quit
 - [x] Inactive timer: primary System Theme color (dark), background system theme color (white)
 - [x] Active timer: purple border appears
 - [x] Clicking active timer stops timer
@@ -35,10 +35,9 @@ Configurable countdown timer in the macOS StatusBar. Fast preset switching, simp
 
 ### 4. Options
 
-- [ ] About (app info)
-- [ ] Sound (toggle)
-- [ ] Checkbox Option (TBD)
-- [ ] Quit (exit app)
+- [x] About (app info)
+- [x] Sound (toggle)
+- [x] Quit (exit app)
 
 ### 5. Extras
 
@@ -70,13 +69,12 @@ Configurable countdown timer in the macOS StatusBar. Fast preset switching, simp
 
 ### Step 5: Options UI
 
-- [ ] Modal/sheet with:
-  - [ ] About
-  - [ ] Sound toggle
-  - [ ] Checkbox Option
-  - [ ] Focus Timers input (comma-separated)
-  - [ ] Rest Timers input (comma-separated)
-  - [ ] Quit
+- [x] Modal/sheet with:
+  - [x] About
+  - [x] Sound toggle
+  - [x] Focus Timers input (comma-separated)
+  - [x] Rest Timers input (comma-separated)
+  - [x] Quit
 
 ### Step 6: Settings Logic
 
