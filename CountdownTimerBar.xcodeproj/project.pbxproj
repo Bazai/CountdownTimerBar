@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		681ECD8D2E0EFC2E004EE740 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 681ECD8C2E0EFC2E004EE740 /* Info.plist */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		681ECD7D2E0EFA79004EE740 /* CountdownTimerBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CountdownTimerBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		681ECD8C2E0EFC2E004EE740 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +37,7 @@
 		681ECD742E0EFA79004EE740 = {
 			isa = PBXGroup;
 			children = (
+				681ECD8C2E0EFC2E004EE740 /* Info.plist */,
 				681ECD7F2E0EFA79004EE740 /* CountdownTimerBar */,
 				681ECD7E2E0EFA79004EE740 /* Products */,
 			);
@@ -109,6 +115,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				681ECD8D2E0EFC2E004EE740 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
