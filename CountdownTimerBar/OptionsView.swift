@@ -10,6 +10,7 @@ import SwiftUI
 struct OptionsView: View {
     @Binding var focusTimers: [Int]
     @Binding var restTimers: [Int]
+    var onClose: (() -> Void)? = nil
     @State private var focusInput = ""
     @State private var restInput = ""
     @State private var soundOn = UserDefaults.standard.bool(forKey: "soundOn")

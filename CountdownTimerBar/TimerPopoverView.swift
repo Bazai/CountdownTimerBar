@@ -78,8 +78,8 @@ struct TimerPopoverView: View {
             Button(action: { showOptions = true }) {
                 Image(systemName: "gearshape")
             }
-            .sheet(isPresented: $showOptions) {
-                OptionsView(focusTimers: $focusTimers, restTimers: $restTimers)
+            .popover(isPresented: $showOptions, arrowEdge: .bottom) {
+                OptionsView(focusTimers: $focusTimers, restTimers: $restTimers, onClose: { showOptions = false })
             }
         }
         .padding()

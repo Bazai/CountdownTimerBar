@@ -26,6 +26,7 @@ Configurable countdown timer in the macOS StatusBar. Fast preset switching, simp
 - [x] Countdown timer, display in StatusBar
 - [x] Start timer from preset
 - [x] Auto-stop/reset on finish
+- [x] Timer logic now uses precise decrement (remainingSeconds -= 1), no double-tick bug, countdown is accurate
 
 ### 3. Configurability
 
@@ -82,6 +83,7 @@ Configurable countdown timer in the macOS StatusBar. Fast preset switching, simp
 
 ### Step 7: Polish
 
+- [x] Timer logic bugfix: no double-tick, countdown is accurate
 - [ ] UX review, bugfixes
 - [ ] Release build
 
