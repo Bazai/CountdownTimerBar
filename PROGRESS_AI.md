@@ -19,6 +19,7 @@ Configurable countdown timer in the macOS StatusBar. Fast preset switching, simp
 - [x] Clicking active timer stops timer
 - [x] StatusBar: show 00:00 when no active timer
 - [x] StatusBar timer displayed in outlined pill with perfect UX (no aliasing, no cut edges, matches reference)
+- [x] Popover timer buttons display values as 'Xs' for seconds, 'X' for minutes, for both Focus and Rest (parsing and display logic unified)
 
 ### 2. Timer Logic
 
@@ -29,6 +30,7 @@ Configurable countdown timer in the macOS StatusBar. Fast preset switching, simp
 ### 3. Configurability
 
 - [x] Change Focus/Rest timer values via options (input string → array)
+- [x] Parse input strings to arrays
 - [ ] Persist user settings (UserDefaults)
 
 ### 4. Options

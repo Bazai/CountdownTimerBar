@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TimerPopoverView: View {
     @State private var focusTimers = [15, 30, 35]
-    @State private var restTimers = [1, 10, 20]
+    @State private var restTimers = [10, 30, 600, 1800]
     @State private var showOptions = false
     @State private var activeTimer: (type: String, index: Int)? = nil
     @EnvironmentObject var timerModel: TimerModel
@@ -17,6 +17,13 @@ struct TimerPopoverView: View {
     // Новый стейт: какой таймер сейчас активен (в секундах)
     private var activeValue: Int? {
         timerModel.isRunning ? timerModel.remainingSeconds : nil
+    }
+
+    // Форматирование для кнопки: 1s, 10s, 30, 90s, 2
+    func displayString(for seconds: Int) -> String {
+        if seconds < 60 { return "\(seconds)s" }
+        if seconds % 60 == 0 { return "\(seconds/60)" }
+        return "\(seconds)s"
     }
 
     var body: some View {
@@ -32,13 +39,13 @@ struct TimerPopoverView: View {
                         TimerButton(
                             value: t,
                             isActive: activeTimer?.type == "focus" && activeTimer?.index == idx && timerModel.isRunning,
-                            display: t < 60 ? "\(t)s" : "\(t)"
+                            display: displayString(for: t)
                         ) {
                             if activeTimer?.type == "focus" && activeTimer?.index == idx && timerModel.isRunning {
                                 timerModel.stop()
                                 activeTimer = nil
                             } else {
-                                timerModel.start(seconds: t * 60)
+                                timerModel.start(seconds: t)
                                 activeTimer = ("focus", idx)
                             }
                         }
@@ -50,7 +57,7 @@ struct TimerPopoverView: View {
                         TimerButton(
                             value: t,
                             isActive: activeTimer?.type == "rest" && activeTimer?.index == idx && timerModel.isRunning,
-                            display: t < 60 ? "\(t)s" : "\(t)"
+                            display: displayString(for: t)
                         ) {
                             if activeTimer?.type == "rest" && activeTimer?.index == idx && timerModel.isRunning {
                                 timerModel.stop()
