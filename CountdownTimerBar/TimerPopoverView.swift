@@ -11,7 +11,7 @@ struct TimerPopoverView: View {
     @State private var focusTimers = [15, 30, 35]
     @State private var restTimers = [1, 10, 20]
     @State private var showOptions = false
-//    @StateObject private var timerModel = TimerModel()
+    @State private var activeTimer: (type: String, index: Int)? = nil
     @EnvironmentObject var timerModel: TimerModel
     
     // Новый стейт: какой таймер сейчас активен (в секундах)
@@ -28,16 +28,17 @@ struct TimerPopoverView: View {
             HStack {
                 VStack {
                     Text("Focus")
-                    ForEach(focusTimers, id: \.self) { t in
-                        let seconds = t * 60
+                    ForEach(Array(focusTimers.enumerated()), id: \ .offset) { idx, t in
                         TimerButton(
                             value: t,
-                            isActive: activeValue == seconds,
+                            isActive: activeTimer?.type == "focus" && activeTimer?.index == idx && timerModel.isRunning,
                             action: {
-                                if activeValue == seconds {
+                                if activeTimer?.type == "focus" && activeTimer?.index == idx && timerModel.isRunning {
                                     timerModel.stop()
+                                    activeTimer = nil
                                 } else {
-                                    timerModel.start(seconds: seconds)
+                                    timerModel.start(seconds: t * 60)
+                                    activeTimer = ("focus", idx)
                                 }
                             }
                         )
@@ -45,16 +46,17 @@ struct TimerPopoverView: View {
                 }
                 VStack {
                     Text("Rest")
-                    ForEach(restTimers, id: \.self) { t in
-                        let seconds = t
+                    ForEach(Array(restTimers.enumerated()), id: \ .offset) { idx, t in
                         TimerButton(
                             value: t,
-                            isActive: activeValue == seconds,
+                            isActive: activeTimer?.type == "rest" && activeTimer?.index == idx && timerModel.isRunning,
                             action: {
-                                if activeValue == seconds {
+                                if activeTimer?.type == "rest" && activeTimer?.index == idx && timerModel.isRunning {
                                     timerModel.stop()
+                                    activeTimer = nil
                                 } else {
-                                    timerModel.start(seconds: seconds)
+                                    timerModel.start(seconds: t)
+                                    activeTimer = ("rest", idx)
                                 }
                             }
                         )
