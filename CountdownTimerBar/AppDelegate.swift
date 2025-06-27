@@ -38,7 +38,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     self?.statusItem?.button?.title =
                         self?.formatTime(seconds) ?? ""
                 } else {
-                    self?.statusItem?.button?.title = ""
+                    self?.statusItem?.button?.title = "00:00"
                     self?.statusItem?.button?.image = NSImage(
                         systemSymbolName: "hourglass",
                         accessibilityDescription: "Timer"

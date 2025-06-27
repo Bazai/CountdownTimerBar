@@ -13,31 +13,51 @@ struct TimerPopoverView: View {
     @State private var showOptions = false
 //    @StateObject private var timerModel = TimerModel()
     @EnvironmentObject var timerModel: TimerModel
+    
+    // Новый стейт: какой таймер сейчас активен (в секундах)
+    private var activeValue: Int? {
+        timerModel.isRunning ? timerModel.remainingSeconds : nil
+    }
 
     var body: some View {
         VStack {
-            // Таймер в статус-баре
-            if timerModel.isRunning {
-                Text(formatTime(timerModel.remainingSeconds))
-                    .font(.largeTitle)
-                    .padding()
-            }
-
+            // Показывать 00:00 если таймер не активен
+            Text(formatTime(timerModel.isRunning ? timerModel.remainingSeconds : 0))
+                .font(.largeTitle)
+                .padding()
             HStack {
                 VStack {
                     Text("Focus")
                     ForEach(focusTimers, id: \.self) { t in
-                        TimerButton(value: t) {
-                            timerModel.start(seconds: t * 60)
-                        }
+                        let seconds = t * 60
+                        TimerButton(
+                            value: t,
+                            isActive: activeValue == seconds,
+                            action: {
+                                if activeValue == seconds {
+                                    timerModel.stop()
+                                } else {
+                                    timerModel.start(seconds: seconds)
+                                }
+                            }
+                        )
                     }
                 }
                 VStack {
                     Text("Rest")
                     ForEach(restTimers, id: \.self) { t in
-                        TimerButton(value: t) {
-                            timerModel.start(seconds: t * 60)
-                        }
+                        let seconds = t
+                        TimerButton(
+                            value: t,
+                            isActive: activeValue == seconds,
+                            action: {
+                                if activeValue == seconds {
+                                    timerModel.stop()
+                                } else {
+                                    timerModel.start(seconds: seconds)
+                                }
+                            }
+                        )
                     }
                 }
             }
@@ -61,20 +81,25 @@ struct TimerPopoverView: View {
 
 struct TimerButton: View {
     let value: Int
+    let isActive: Bool
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             Text("\(value)")
+                .foregroundColor(Color.black)
                 .frame(width: 60, height: 60)
                 .background(
-                    RoundedRectangle(cornerRadius: 30).stroke(
-                        Color.purple,
-                        lineWidth: 3
-                    )
+                    RoundedRectangle(cornerRadius: 30)
+                        .fill(Color.white)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 30)
+                        .stroke(isActive ? Color.purple : Color.clear, lineWidth: 4)
                 )
                 .font(.title)
                 .padding(4)
         }
+        .buttonStyle(PlainButtonStyle())
     }
 }

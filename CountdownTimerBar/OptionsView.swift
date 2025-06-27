@@ -24,13 +24,13 @@ struct OptionsView: View {
             VStack(alignment: .leading) {
                 Text("Focus Timers")
                 TextField("10,15,30", text: $focusInput, onCommit: {
-                    focusTimers = focusInput.split(separator: ",").compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
+                    focusTimers = parseTimerInput(focusInput)
                 })
             }
             VStack(alignment: .leading) {
                 Text("Rest Timers")
                 TextField("2,3,5,19", text: $restInput, onCommit: {
-                    restTimers = restInput.split(separator: ",").compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
+                    restTimers = parseTimerInput(restInput)
                 })
             }
             HStack {
@@ -57,8 +57,22 @@ struct OptionsView: View {
         .padding()
         .frame(width: 300)
         .onAppear {
-            focusInput = focusTimers.map(String.init).joined(separator: ",")
-            restInput = restTimers.map(String.init).joined(separator: ",")
+            focusInput = focusTimers.map { $0 % 60 == 0 ? "\($0/60)" : "\($0)s" }.joined(separator: ",")
+            restInput = restTimers.map { $0 % 60 == 0 ? "\($0/60)" : "\($0)s" }.joined(separator: ",")
+        }
+    }
+
+    func parseTimerInput(_ input: String) -> [Int] {
+        input.split(separator: ",").compactMap { part in
+            let trimmed = part.trimmingCharacters(in: .whitespaces)
+            if trimmed.hasSuffix("s") {
+                return Int(trimmed.dropLast())
+            } else if trimmed.hasSuffix("m") {
+                if let min = Int(trimmed.dropLast()) { return min * 60 }
+            } else if let min = Int(trimmed) {
+                return min * 60
+            }
+            return nil
         }
     }
 }
