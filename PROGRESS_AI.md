@@ -84,8 +84,8 @@ Configurable countdown timer in the macOS StatusBar. Fast preset switching, simp
 ### Step 7: Polish
 
 - [x] Timer logic bugfix: no double-tick, countdown is accurate
-- [ ] UX review, bugfixes
-- [ ] Release build
+- [x] UX review, bugfixes
+- [x] Release build
 
 ---
 
