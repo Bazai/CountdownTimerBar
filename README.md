@@ -21,7 +21,7 @@ Minimalist, hackable countdown timer for your macOS status bar. Built for coders
    open CountdownTimerBar/CountdownTimerBar.xcodeproj
    ```
 2. **Build & run** in Xcode (Release or Debug)
-3. **Or** [Download the latest release](https://github.com/yourusername/CountdownTimerBar/releases) and drag to Applications
+3. **Or** [Download the latest release](https://github.com/Bazai/CountdownTimerBar/releases) and drag to Applications
 
 > **Note:** First launch may require you to allow notifications in System Preferences.
 
