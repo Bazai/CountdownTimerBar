@@ -19,6 +19,11 @@ struct OptionsView: View {
     @State private var restInputError = false
 
     private enum InputField { case focus, rest }
+    
+    private var appVersion: String {
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
+        return "\(version)"
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -66,6 +71,9 @@ struct OptionsView: View {
                             .font(.title)
                         Text("Minimalist configurable timer for macOS StatusBar.\nInspired by Hourglass.")
                             .multilineTextAlignment(.center)
+                        Text("Version \(appVersion)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                         Text("© 2025 Pavel Bubentsov")
                             .font(.footnote)
                             .foregroundColor(.secondary)
