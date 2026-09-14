@@ -102,8 +102,11 @@ class StatusBarController {
             height: size.height
         )
         (text as NSString).draw(in: textRect, withAttributes: attributes)
-        
+
         image.unlockFocus()
+        // Render as a template so the menu bar tints it for the active appearance
+        // (white on dark, black on light) instead of baking in a fixed color.
+        image.isTemplate = true
         return image
     }
 } 
