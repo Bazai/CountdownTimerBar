@@ -1,0 +1,62 @@
+[package]
+name = "countdown-timer-bar"
+version = "0.0.1"
+edition = "2021"
+rust-version = "1.85"
+
+[lib]
+name = "countdown_timer_bar"
+path = "src/lib.rs"
+
+[[bin]]
+name = "CountdownTimerBar"
+path = "src/main.rs"
+
+[dependencies]
+block2 = "0.6.2"
+gpui-kit = "0.7.0"
+objc2 = "0.6.4"
+objc2-app-kit = "0.3.2"
+objc2-foundation = "0.3.2"
+objc2-user-notifications = "0.3.2"
+raw-window-handle = "0.6"
+
+[features]
+# In-memory test harness (`countdown_timer_bar::testing`) for the UI tests.
+test-support = ["gpui-kit/test-support"]
+
+[dev-dependencies]
+countdown-timer-bar = { path = ".", features = ["test-support"] }
+gpui-kit = { version = "0.7.0", features = ["test-support"] }
+image = { version = "0.25", default-features = false, features = ["png"] }
+
+# Lint policy (docs/adr/0005): clippy::all is an error, pedantic a warning, with
+# the few exceptions below. Anything else is silenced locally with
+# `#[expect(clippy::lint, reason = "...")]`, never globally.
+[lints.rust]
+future-incompatible = "warn"
+unused = { level = "warn", priority = -1 }
+
+[lints.clippy]
+all = { level = "deny", priority = 10 }
+pedantic = { level = "warn", priority = 3 }
+# Colours are written as 0xRRGGBB; splitting them with underscores hurts readability.
+unreadable_literal = { level = "allow", priority = 5 }
+# An application crate: `#[must_use]` on every getter is noise.
+must_use_candidate = { level = "allow", priority = 5 }
+return_self_not_must_use = { level = "allow", priority = 5 }
+redundant_clone = { level = "warn", priority = 4 }
+use_self = { level = "warn", priority = 4 }
+unwrap_used = { level = "warn", priority = 4 }
+expect_used = { level = "warn", priority = 4 }
+panic = { level = "warn", priority = 4 }
+todo = { level = "warn", priority = 4 }
+unimplemented = { level = "warn", priority = 4 }
+dbg_macro = { level = "warn", priority = 4 }
+print_stderr = { level = "warn", priority = 4 }
+
+[[test]]
+name = "visual"
+# Metal rendering and the text system need the main thread, which the default
+# test harness does not give.
+harness = false
