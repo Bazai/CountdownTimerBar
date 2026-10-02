@@ -91,7 +91,7 @@ make check         # fmt check, clippy (-D warnings) and all tests; run before e
 | `make agents` | Links `.agents/skills` into `.claude/skills` and creates `CLAUDE.md` (`@AGENTS.md`) if it is missing |
 | `make run` | Builds, stops a running copy and opens the new one |
 | `make check` | Runs `fmt-check`, `lint` and `test` |
-| `make release` | Tags `v<Cargo.toml version>` and pushes the branch and tag to `origin` (`DRY_RUN=1` to rehearse) |
+| `make release` | Checks that the `Cargo.toml` version is ready to release (clean tree, current LICENSE years, no tag yet, `make check`); it publishes nothing |
 | `make fmt` / `make lint` / `make test` | Run the parts of `check` |
 | `UPDATE_GOLDEN=1 cargo test --test visual` | Rewrites the golden images after an intended visual change |
 
@@ -166,8 +166,8 @@ The two images at the top of this README (`.github/hero-*.png`) are composites. 
 - **Known warning.** Builds print a future-incompatibility note about `block v0.1.6`. It comes from the dependency chain of `gpui-kit`, cannot be fixed here and does not affect the build.
 - **Dependencies.** The project consumes GPUI through `gpui-kit` 0.7. After `cargo update`, run `make check`. Golden images can shift with a new GPUI, macOS or font version, so review the diffs and then regenerate them with `UPDATE_GOLDEN=1`.
 - **Copyright.** The notice in `LICENSE` is the only place the years are written. `make license` updates them, the About card reads the same line (`countdown_timer_bar::copyright()`), and `make release` refuses a release whose LICENSE years are not current.
-- **CI.** `.github/workflows/ci.yml` runs on every push to `main` and every pull request, on a `macos-15` runner. One job runs formatting, clippy, and the unit, interaction and doc tests. A second job runs the golden snapshots, and on a failure it uploads the actual and diff images as the `visual-diff` artifact. Releases are manual (`make release`, `make dist`).
+- **CI.** `.github/workflows/ci.yml` runs on every push to `main` and every pull request, on a `macos-15` runner. One job runs formatting, clippy, and the unit, interaction and doc tests. A second job runs the golden snapshots, and on a failure it uploads the actual and diff images as the `visual-diff` artifact. A second workflow, `release.yml`, publishes releases (see Releasing).
 - **Versioning.** `Cargo.toml` is the only place a version is written. The About card shows it (`countdown_timer_bar::VERSION`), and `build-app.sh` stamps it into the bundle's `Info.plist`.
-- **Releasing.** Bump `version` in `Cargo.toml` (`Cargo.lock` follows) and commit. Then run `make release`, which refuses a dirty tree or an existing tag, runs `make check`, creates the annotated tag `v<version>` and pushes the branch and the tag to `origin`. `make release DRY_RUN=1` stops before tagging. Finally run `make dist` with the signing variables set, and attach `releases/CountdownTimerBar-v<version>.zip` to the GitHub release for that tag.
+- **Releasing.** Bump `version` in `Cargo.toml` (`Cargo.lock` follows) and commit. Run `make release` to check the commit, then push to `main`. When CI passes, `.github/workflows/release.yml` reads the version. If `v<version>` has no tag yet, it checks the LICENSE years, runs `make dist`, and creates the tag and the GitHub release with `CountdownTimerBar-v<version>.zip`, its sha256 and generated notes. A version that already has a tag is skipped. The archive is unsigned. Signing needs a Developer ID certificate and notarization secrets that the workflow does not use yet.
 - **Storage.** Settings live in the `baz.CountdownTimerBar` user-defaults domain under `focusTimers`, `restTimers` and `soundOn`. These are the same keys the earlier Swift version used, so its settings carry over. Do not rename them.
 - **Platform minimum.** macOS 15 (`LSMinimumSystemVersion`).

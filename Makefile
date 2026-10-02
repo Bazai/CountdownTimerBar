@@ -35,8 +35,8 @@ test:
 
 check: fmt-check lint test
 
-# Tags the Cargo.toml version and pushes the branch and the tag to origin.
-# `make release DRY_RUN=1` runs every check and prints what it would do.
+# Checks that the Cargo.toml version is ready to release. Pushing the bump to main
+# lets the Release workflow tag and publish it.
 release:
 	./packaging/release.sh
 

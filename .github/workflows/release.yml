@@ -1,0 +1,68 @@
+name: Release
+
+# Publishes the version in Cargo.toml once CI has passed on main. A version that
+# already has a tag is skipped, so ordinary commits do nothing.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+concurrency:
+  group: release
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Tag and publish
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    runs-on: macos-15
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Read the version and look for its tag
+        id: version
+        run: |
+          version="$(sed -n 's/^version = "\(.*\)"$/\1/p' Cargo.toml | head -n 1)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --tags origin "refs/tags/v$version" >/dev/null 2>&1; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "v$version already has a tag; nothing to publish."
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check the LICENSE years
+        if: steps.version.outputs.publish == 'true'
+        run: |
+          year="$(date +%Y)"
+          grep -q -E "^Copyright \(c\) ([0-9]{4}-)?$year " LICENSE \
+            || { echo "The LICENSE years are not current. Run make license and commit."; exit 1; }
+
+      - uses: jdx/mise-action@v2
+        if: steps.version.outputs.publish == 'true'
+      - uses: Swatinem/rust-cache@v2
+        if: steps.version.outputs.publish == 'true'
+
+      - name: Build the bundle and the archive
+        if: steps.version.outputs.publish == 'true'
+        run: make dist
+
+      - name: Publish the release
+        if: steps.version.outputs.publish == 'true'
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          archive="CountdownTimerBar-v$version.zip"
+          (cd releases && shasum -a 256 "$archive" > "$archive.sha256")
+          gh release create "v$version" \
+            --target "${{ github.event.workflow_run.head_sha }}" \
+            --title "CountdownTimerBar $version" \
+            --generate-notes \
+            "releases/$archive" "releases/$archive.sha256"

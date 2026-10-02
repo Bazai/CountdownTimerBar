@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Releases the version in Cargo.toml: checks, tags `v<version>` and pushes the
-# current branch and the tag to origin. DRY_RUN=1 stops before tagging.
+# Checks that the version in Cargo.toml is ready to release. It publishes
+# nothing: pushing the bump to main lets .github/workflows/release.yml tag and
+# publish the version once CI passes.
 set -euo pipefail
 
 project_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
@@ -14,8 +15,6 @@ fail() {
 version="$(sed -n 's/^version = "\(.*\)"$/\1/p' Cargo.toml | head -n 1)"
 [[ -n "$version" ]] || fail "no version found in Cargo.toml"
 tag="v$version"
-branch="$(git rev-parse --abbrev-ref HEAD)"
-[[ "$branch" != "HEAD" ]] || fail "detached HEAD; check out a branch"
 [[ -z "$(git status --porcelain)" ]] || fail "the working tree has uncommitted changes"
 
 year="$(date +%Y)"
@@ -28,11 +27,4 @@ fi
 
 make check
 
-if [[ -n "${DRY_RUN:-}" ]]; then
-    printf 'release: dry run; would tag %s on %s and push %s and %s to origin\n' "$tag" "$(git rev-parse --short HEAD)" "$branch" "$tag"
-    exit 0
-fi
-
-git tag -a "$tag" -m "CountdownTimerBar $version"
-git push origin "$branch" "$tag"
-printf 'release: pushed %s\n' "$tag"
+printf 'release: %s is ready; push it to main and CI will publish it\n' "$tag"
