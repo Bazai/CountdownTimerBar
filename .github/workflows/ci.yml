@@ -35,8 +35,6 @@ jobs:
     name: Golden snapshots
     runs-on: macos-15
     timeout-minutes: 45
-    # Headless Metal on hosted runners is unverified; drop this line once the job is stable.
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: jdx/mise-action@v2
