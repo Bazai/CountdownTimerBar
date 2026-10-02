@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    name: Format, lints, tests
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
+      - uses: Swatinem/rust-cache@v2
+      - run: make fmt-check
+      - run: make lint
+      - name: Unit and interaction tests
+        run: cargo test --locked --lib --test countdown --test presets --test settings --test ui_flows
+      - name: Doc tests
+        run: cargo test --locked --doc
+
+  visual:
+    name: Golden snapshots
+    runs-on: macos-15
+    timeout-minutes: 45
+    # Headless Metal on hosted runners is unverified; drop this line once the job is stable.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test --locked --test visual
+      - name: Keep the actual and diff images
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diff
+          path: target/visual
+          if-no-files-found: ignore
