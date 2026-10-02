@@ -1,7 +1,7 @@
 APP := CountdownTimerBar
 BUNDLE := releases/$(APP).app
 
-.PHONY: build dist open stop run fmt fmt-check lint test check release agents license
+.PHONY: build dist open stop run fmt fmt-check lint test check bump release agents license
 
 # The bundle lands in releases/ (ignored by git).
 build:
@@ -34,6 +34,12 @@ test:
 	cargo test --locked
 
 check: fmt-check lint test
+
+# Bumps and commits the version: the next patch by default, `make bump BUMP=minor`,
+# `make bump BUMP=major` or `make bump BUMP=1.2.3`. `DRY_RUN=1` only prints the plan.
+BUMP ?= patch
+bump:
+	./packaging/bump.sh $(BUMP)
 
 # Checks that the Cargo.toml version is ready to release. Pushing the bump to main
 # lets the Release workflow tag and publish it.
