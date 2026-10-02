@@ -1,5 +1,11 @@
 # CountdownTimerBar
 
+[![CI](https://github.com/Bazai/CountdownTimerBar/actions/workflows/ci.yml/badge.svg)](https://github.com/Bazai/CountdownTimerBar/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/Bazai/CountdownTimerBar?include_prereleases&sort=semver)](https://github.com/Bazai/CountdownTimerBar/releases)
+[![License: MIT](https://img.shields.io/github/license/Bazai/CountdownTimerBar)](LICENSE)
+![macOS 15+](https://img.shields.io/badge/macOS-15%2B-blue?logo=apple&logoColor=white)
+![Built with Rust](https://img.shields.io/badge/built%20with-Rust-orange?logo=rust&logoColor=white)
+
 Minimalist, hackable countdown timer for your macOS status bar. Built for coders, makers, and productivity geeks who want a Pomodoro-style timer always at hand — but hate bloat.
 
 <p align="center">
