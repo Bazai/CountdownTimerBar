@@ -54,6 +54,11 @@ if [[ -n "${APPLE_SIGNING_IDENTITY:-}" && -n "${APPLE_TEAM_ID:-}" && -n "${APPLE
     xcrun stapler validate "$bundle_path"
     printf 'Built, signed, notarized, and stapled: %s\n' "$bundle_path"
 else
-    printf '%s\n' "Built unsigned bundle: $bundle_path"
+    # The linker's ad-hoc signature covers only the binary, and `strip` plus the
+    # added Info.plist leave it inconsistent with the bundle. A downloaded copy then
+    # fails Gatekeeper as "damaged"; sealing the bundle ad hoc fixes that.
+    codesign --force --sign - --identifier baz.CountdownTimerBar "$bundle_path"
+    codesign --verify --strict "$bundle_path"
+    printf '%s\n' "Built ad-hoc signed bundle: $bundle_path"
     printf '%s\n' 'Signing and notarization require APPLE_SIGNING_IDENTITY, APPLE_TEAM_ID, and APPLE_NOTARY_KEYCHAIN_PROFILE.'
 fi

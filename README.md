@@ -30,7 +30,7 @@ A minimalist, hackable countdown timer that lives in your macOS status bar. Clic
 
 ## Install
 
-**Download.** Get the latest build from [Releases](https://github.com/Bazai/CountdownTimerBar/releases), unzip it and drag `CountdownTimerBar.app` to Applications. Unless the release notes say otherwise, the app is unsigned. On first launch, right-click it and choose **Open**.
+**Download.** Get the latest build from [Releases](https://github.com/Bazai/CountdownTimerBar/releases), unzip it and drag `CountdownTimerBar.app` to Applications. The app is not notarized yet, so macOS blocks the first launch. Open **System Settings**, go to **Privacy & Security** and click **Open Anyway** next to CountdownTimerBar. You can also run `xattr -dr com.apple.quarantine /Applications/CountdownTimerBar.app` once.
 
 **Build it yourself.** You need macOS 15 or later and [mise](https://mise.jdx.dev):
 
